@@ -6,10 +6,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const generateAccessTokenAndRefreshTokens = async (userId) => {
 	try {
-		const user = await User.findById(user);
+		const user = await User.findById(userId);
 		const accessToken = user.generateAccessToken();
 		const refreshToken = user.generateRefreshToken();
-
 		user.refreshToken = refreshToken;
 
 		//save the data in the database without validation
@@ -19,7 +18,7 @@ const generateAccessTokenAndRefreshTokens = async (userId) => {
 	} catch (error) {
 		throw new ApiError(
 			500,
-			"Something went wrong while generating refresh and acess token"
+			"Something went wrong while generating refresh and access token"
 		);
 	}
 };
@@ -111,7 +110,7 @@ const loginUser = asyncHandler(async (req, res) => {
 	const { email, username, password } = req.body;
 
 	if (!username && !email) {
-		throw new ApiError(400, "username or password is required");
+		throw new ApiError(400, "username or email is required");
 	}
 
 	const user = await User.findOne({
@@ -160,7 +159,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  //basically to logout the user set the refreshToken to undefined 
+	//basically to logout the user set the refreshToken to undefined
 	User.findByIdAndUpdate(
 		req.user._id,
 		{
